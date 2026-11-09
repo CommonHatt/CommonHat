@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#18191b">
+  <meta name="description" content="Конвертация видео, аудио, изображений и документов прямо на вашем устройстве.">
+  <title>Nomad Convert — локальный конвертер файлов</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%231d1e20'/%3E%3Cpath d='M14 22h36L40 34H14zm0 20h36L25 30h25' fill='none' stroke='%23e4ac21' stroke-width='6' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="svg-sprite" style="display:none">
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 15v5h16v-5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5M6.5 8A7 7 0 0 1 19 12M17.5 16A7 7 0 0 1 5 12"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M13 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10l-7-7Z"/><path d="M13 3v7h7M8 15h8M8 18h6"/></symbol>
+    <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="5" width="14" height="14" rx="3"/><path d="m17 10 4-3v10l-4-3"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m3 17 5-5 4 4 3-3 6 6"/></symbol>
+    <symbol id="i-audio" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5ZM3 12l9 5 9-5M3 16l9 5 9-5"/></symbol>
+    <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M11 4v9M14 4v9M9 17h6"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2m3 0-1 15H6L5 6M10 10v7M14 10v7"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 2 9 4v5c0 5.7-3.3 9.2-9 11-5.7-1.8-9-5.3-9-11V6l9-4Z"/><path d="m8 12 3 3 5-6"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M13 5h6v6M19 5l-9 9M19 14v5H5V5h5"/></symbol>
+  </svg>
+
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+  <aside class="drawer" id="drawer" aria-label="Навигация">
+    <div class="drawer-top"><span class="drawer-title">НАВИГАЦИЯ</span><button class="icon-btn" id="drawer-close" aria-label="Закрыть меню"><svg><use href="#i-x"></use></svg></button></div>
+    <button class="drawer-link active" data-nav="convert"><svg><use href="#i-refresh"></use></svg> Конвертер файлов <svg class="end-arrow"><use href="#i-chevron"></use></svg></button>
+    <button class="drawer-link" data-nav="pdf"><svg><use href="#i-layers"></use></svg> Объединить PDF <svg class="end-arrow"><use href="#i-chevron"></use></svg></button>
+    <button class="drawer-link" data-nav="zip"><svg><use href="#i-archive"></use></svg> Создать ZIP <svg class="end-arrow"><use href="#i-chevron"></use></svg></button>
+    <button class="drawer-link" data-nav="history"><svg><use href="#i-download"></use></svg> Готовые файлы <svg class="end-arrow"><use href="#i-chevron"></use></svg></button>
+    <div class="drawer-bottom"><span class="online-dot"></span> СЕРВЕР НА ЭТОМ УСТРОЙСТВЕ<p>Адрес: 127.0.0.1:8765</p></div>
+  </aside>
+
+  <div class="page">
+    <header class="header">
+      <div class="header-left">
+        <button class="icon-btn menu-btn" id="menu-open" aria-label="Открыть меню"><svg><use href="#i-menu"></use></svg></button>
+        <div class="brand-mark" aria-hidden="true"><span class="mark-track first"></span><span class="mark-track second"></span><span class="mark-dot"></span></div>
+        <div class="brand-text"><strong>NOMAD<span>CONVERT</span></strong><small>LOCAL FILE STUDIO</small></div>
+      </div>
+      <div class="local-badge"><span class="online-dot"></span> <span>ЛОКАЛЬНО</span></div>
+    </header>
+
+    <main>
+      <div class="kicker">ИНСТРУМЕНТЫ / КОНВЕРТЕР ФАЙЛОВ</div>
+      <section class="hero surface">
+        <div class="hero-copy">
+          <div class="hero-number">01 / 02 — FILE WORKSPACE</div>
+          <h1>Любой файл.<br><span>Нужный формат.</span></h1>
+          <p>Конвертируй видео, фото, музыку и документы прямо на своём устройстве.</p>
+          <div class="hero-graphic" aria-hidden="true">
+            <div class="format-box old"><span class="mini-glow"></span><svg><use href="#i-video"></use></svg><strong>WEBM</strong><small>Исходный</small></div>
+            <div class="swap-line"><span></span><svg><use href="#i-arrow-right"></use></svg></div>
+            <div class="format-box new"><svg><use href="#i-video"></use></svg><strong>MP4</strong><small>Готовый</small></div>
+          </div>
+        </div>
+        <div class="hero-bottom"><div class="hero-bottom-text"><svg><use href="#i-shield"></use></svg> Без облака и отправки файлов</div><span class="hero-bottom-chevron"><svg><use href="#i-chevron"></use></svg></span></div>
+      </section>
+
+      <div class="stat-row" aria-label="Информация о приложении">
+        <div class="stat surface"><span class="stat-label"><svg><use href="#i-layers"></use></svg> ФОРМАТЫ</span><strong id="formats-count">30+</strong></div>
+        <div class="stat surface"><span class="stat-label"><svg><use href="#i-check"></use></svg> РЕЖИМ</span><strong>OFFLINE</strong></div>
+        <div class="stat surface"><span class="stat-label"><svg><use href="#i-lock"></use></svg> ОБЛАКО</span><strong>НЕТ</strong></div>
+      </div>
+
+      <div class="content-layout">
+        <div class="primary-column">
+          <section class="converter surface" id="converter">
+            <div class="panel-heading">
+              <div class="panel-heading-title"><span class="heading-icon"><svg><use href="#i-refresh"></use></svg></span><h2>Конвертер файлов</h2></div>
+              <span class="section-index">01 / 03</span>
+            </div>
+            <p class="panel-description">Выбери файл и формат, в котором хочешь его получить.</p>
+            <div class="category-scroll" id="category-tabs" role="group" aria-label="Категория файла">
+              <button class="category active" data-category="all">Все</button>
+              <button class="category" data-category="video">Видео</button>
+              <button class="category" data-category="image">Фото</button>
+              <button class="category" data-category="audio">Аудио</button>
+              <button class="category" data-category="document">Документы</button>
+              <button class="category" data-category="table">Таблицы</button>
+            </div>
+            <div class="divider"></div>
+            <div class="field-label">БЫСТРЫЙ ВЫБОР <span>ПОПУЛЯРНОЕ</span></div>
+            <div class="presets" id="presets">
+              <button class="preset" data-from="webm" data-to="mp4"><span class="preset-dot gold"></span> WEBM <svg><use href="#i-arrow-right"></use></svg> MP4</button>
+              <button class="preset" data-from="png" data-to="jpg"><span class="preset-dot blue"></span> PNG <svg><use href="#i-arrow-right"></use></svg> JPG</button>
+              <button class="preset" data-from="pdf" data-to="txt"><span class="preset-dot purple"></span> PDF <svg><use href="#i-arrow-right"></use></svg> TXT</button>
+              <button class="preset" data-from="mp3" data-to="wav"><span class="preset-dot pink"></span> MP3 <svg><use href="#i-arrow-right"></use></svg> WAV</button>
+            </div>
+
+            <div class="field-label file-title">ИСХОДНЫЙ ФАЙЛ <span>МАКС. 800 МБ</span></div>
+            <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Выбрать или перетащить файлы">
+              <div class="upload-icon"><svg><use href="#i-upload"></use></svg></div>
+              <div class="drop-title">Перетащи файлы сюда</div>
+              <div class="drop-subtitle">или выбери их на устройстве</div>
+              <button class="select-btn" id="select-files" type="button">Выбрать файлы <svg><use href="#i-arrow-right"></use></svg></button>
+              <div class="drop-foot">Можно выбрать несколько файлов одного типа</div>
+            </div>
+            <input type="file" id="file-picker" multiple hidden>
+            <div class="file-list" id="file-list" aria-live="polite"></div>
+
+            <label class="field-label select-label" for="target-format">ПРЕОБРАЗОВАТЬ В</label>
+            <div class="select-wrap"><select id="target-format" disabled><option value="">Сначала выбери файл</option></select><svg><use href="#i-chevron"></use></svg></div>
+            <div class="quality-row" id="quality-row" hidden><div><span>Качество изображения</span><small>Чем выше, тем больше файл</small></div><strong id="quality-value">85%</strong></div>
+            <input class="quality-range" id="quality-range" type="range" min="25" max="100" value="85" hidden>
+            <button class="primary-btn" id="convert-btn" disabled><svg><use href="#i-refresh"></use></svg> Конвертировать <svg class="right-arrow"><use href="#i-arrow-right"></use></svg></button>
+            <div class="processing" id="processing" hidden><span class="spinner"></span><span id="processing-text">Обрабатываем файл...</span></div>
+            <p class="inline-error" id="convert-error" role="alert" hidden></p>
+            <div class="privacy-line"><svg><use href="#i-lock"></use></svg> Файлы обрабатываются на этом ноутбуке. Интернет не нужен.</div>
+          </section>
+
+          <section class="tools surface" id="tools">
+            <div class="panel-heading"><div class="panel-heading-title"><span class="heading-icon"><svg><use href="#i-layers"></use></svg></span><h2>Дополнительные инструменты</h2></div><span class="section-index">02 / 03</span></div>
+            <p class="panel-description">Две полезные операции без сторонних сайтов.</p>
+            <div class="tool-grid">
+              <button class="tool-card active" data-tool="pdf"><span class="tool-symbol"><svg><use href="#i-layers"></use></svg></span><strong>Объединить PDF</strong><small>Несколько документов в один</small><svg class="tool-arrow"><use href="#i-chevron"></use></svg></button>
+              <button class="tool-card" data-tool="zip"><span class="tool-symbol"><svg><use href="#i-archive"></use></svg></span><strong>Собрать ZIP</strong><small>Упаковать любые файлы</small><svg class="tool-arrow"><use href="#i-chevron"></use></svg></button>
+            </div>
+            <div class="tool-workspace" id="tool-workspace">
+              <div class="workspace-top"><div><strong id="tool-title">Объединение PDF</strong><p id="tool-subtitle">Выбери 2 или более PDF в нужном порядке.</p></div><span id="tool-type-pill">PDF</span></div>
+              <button class="tool-file-btn" id="tool-choose"><svg><use href="#i-upload"></use></svg> Добавить файлы <span>+</span></button>
+              <input type="file" id="tool-picker" accept=".pdf" multiple hidden>
+              <div class="file-list" id="tool-file-list"></div>
+              <button class="tool-action" id="tool-action" disabled>Создать PDF <svg><use href="#i-arrow-right"></use></svg></button>
+              <div class="processing" id="tool-processing" hidden><span class="spinner"></span><span id="tool-processing-text">Обрабатываем...</span></div>
+              <p class="inline-error" id="tool-error" role="alert" hidden></p>
+            </div>
+          </section>
+
+          <section class="history surface" id="history">
+            <div class="panel-heading"><div class="panel-heading-title"><span class="heading-icon"><svg><use href="#i-download"></use></svg></span><h2>Готовые файлы</h2></div><button class="clear-btn" id="clear-results" hidden>Очистить <svg><use href="#i-trash"></use></svg></button></div>
+            <div class="empty-history" id="empty-history"><div class="empty-icon"><svg><use href="#i-file"></use></svg></div><strong>Здесь пока пусто</strong><span>После конвертации файлы появятся здесь.</span></div>
+            <div class="result-list" id="result-list" aria-live="polite"></div>
+          </section>
+        </div>
+
+        <aside class="secondary-column">
+          <section class="side-card surface"><div class="side-number">01 / КОНФИДЕНЦИАЛЬНОСТЬ</div><div class="shield-emblem"><svg><use href="#i-shield"></use></svg></div><h3>Ничего не уходит в облако.</h3><p>Файлы поступают только на локальный сервер этого ноутбука. Ни загрузок на чужие сайты, ни аккаунтов.</p><div class="side-footer"><span class="online-dot"></span> 127.0.0.1 / THIS DEVICE</div></section>
+          <section class="side-card formats-card surface"><div class="side-number">02 / ПОДДЕРЖИВАЕТСЯ</div><h3>Форматы</h3><div class="format-list"><div><svg><use href="#i-video"></use></svg><span>Видео</span><strong>MP4, WEBM, MOV...</strong></div><div><svg><use href="#i-image"></use></svg><span>Фото</span><strong>PNG, JPG, WEBP...</strong></div><div><svg><use href="#i-audio"></use></svg><span>Аудио</span><strong>MP3, WAV, FLAC...</strong></div><div><svg><use href="#i-file"></use></svg><span>Документы</span><strong>PDF, DOCX, TXT...</strong></div><div><svg><use href="#i-layers"></use></svg><span>Таблицы</span><strong>XLSX, CSV, JSON...</strong></div></div><p class="dependency-notice" id="dependency-notice" hidden></p></section>
+          <section class="side-card tip-card surface"><div class="side-number">03 / ПОДСКАЗКА</div><h3>Встроенная запись Ubuntu?</h3><p>Выбирай <b>WEBM → MP4</b>. Результат в H.264 удобно отправлять в WhatsApp.</p><button class="text-action" id="tip-preset">Выбрать конвертацию <svg><use href="#i-arrow-right"></use></svg></button></section>
+        </aside>
+      </div>
+    </main>
+    <footer class="footer"><span>NOMAD CONVERT</span><span>LOCAL EDITION · 2026</span></footer>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
